@@ -169,6 +169,9 @@
   </div>
   <div id="error-banner"></div>
   <div id="filters">
+    <div class="filter-label">会社名検索</div>
+    <input type="text" class="filter-select" id="filter-search" placeholder="会社名を入力..." style="appearance:auto;background-image:none;">
+
     <div class="filter-label">商品</div>
     <select class="filter-select" id="filter-product">
       <option value="">すべての商品</option>
@@ -420,6 +423,7 @@ function buildFilters(companies) {
   ["filter-product", "filter-rep", "filter-date-from", "filter-date-to"].forEach(id => {
     document.getElementById(id).addEventListener("change", applyFilters);
   });
+  document.getElementById("filter-search").addEventListener("input", applyFilters);
   document.getElementById("reset-btn").addEventListener("click", resetFilters);
 }
 
@@ -433,12 +437,14 @@ function populateSelect(id, values) {
 }
 
 function applyFilters() {
+  const search = document.getElementById("filter-search").value.trim().toLowerCase();
   const product = document.getElementById("filter-product").value;
   const rep = document.getElementById("filter-rep").value;
   const from = document.getElementById("filter-date-from").value;
   const to = document.getElementById("filter-date-to").value;
 
   const filtered = allCompanies.filter(c => {
+    if (search && !c.name.toLowerCase().includes(search)) return false;
     if (product && (!c.product || !c.product.split(",").map(p => p.trim()).includes(product))) return false;
     if (rep && c.rep !== rep) return false;
     if (from && c.orderDate && c.orderDate < from) return false;
@@ -449,6 +455,7 @@ function applyFilters() {
 }
 
 function resetFilters() {
+  document.getElementById("filter-search").value = "";
   document.getElementById("filter-product").value = "";
   document.getElementById("filter-rep").value = "";
   document.getElementById("filter-date-from").value = "";
